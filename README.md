@@ -46,6 +46,25 @@ The original repository does **not** provide a verified one-command setup proces
 - Check provenance and license/redistribution rights of sample datasets, images, and supplied question documents before reuse.
 - Verify query outputs and expected results against a known imported dataset before describing them as final analysis.
 
+## Read-only metadata checks
+
+The proposed draft PR adds `scripts/audit_music_store.py`, three offline unit tests and a small GitHub Actions workflow. Run locally with:
+
+```bash
+python scripts/audit_music_store.py
+python -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+[GitHub Actions run #37818317051](https://github.com/29amank/Music_Store_Analysis/actions/runs/37818317051) passed all three tests and checked the expected 11 CSV headers. It reported **five existing SQL/schema warnings**, with no missing or invalid CSV-header errors:
+
+1. `invoiceline` versus `invoice_line` naming.
+2. `miliseconds` versus `milliseconds` naming.
+3. An unrelated `ALTER TABLE assets` statement.
+4. Duplicate primary-key declarations for `playlist_track`.
+5. The draft schema treats track milliseconds as a `TIMESTAMP` rather than numeric duration.
+
+A green audit means **the checker ran and detected these issues**, not that any existing SQL query or schema is correct, importable, or executable. No SQL was executed.
+
 ## Suggested future cleanup
 
 - Create one canonical, validated PostgreSQL schema with correct types and keys.
