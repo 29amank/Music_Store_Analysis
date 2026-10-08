@@ -1,0 +1,31 @@
+name: SQL repository metadata audit
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "*.csv"
+      - "Music_Store_Query.sql"
+      - "Music Store- Create Tables Query.txt"
+      - scripts/**
+      - tests/**
+      - .github/workflows/sql-metadata.yml
+
+permissions:
+  contents: read
+
+jobs:
+  metadata-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check Python syntax
+        run: python -m compileall -q scripts tests
+      - name: Run metadata checker tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Report existing SQL and CSV metadata findings (read-only)
+        run: python scripts/audit_music_store.py
