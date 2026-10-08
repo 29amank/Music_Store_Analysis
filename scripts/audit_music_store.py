@@ -34,7 +34,7 @@ def diagnostics(sql_query, schema):
     if re.search(r"\bALTER\s+TABLE\s+assets\b", schema, flags=re.IGNORECASE):
         warnings.append("Draft schema modifies unrelated 'assets' table")
     playlist = re.search(
-        r"\bCREATE\s+TABLE\s+playlist_track\s*\((.*?)\)",
+        r"\bCREATE\s+TABLE\s+playlist_track\s*\((.*?)\)\s*;",
         schema, flags=re.IGNORECASE | re.DOTALL,
     )
     if playlist and len(re.findall(r"\bPRIMARY\s+KEY\b", playlist.group(1), re.IGNORECASE)) > 1:
